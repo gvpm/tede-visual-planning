@@ -185,6 +185,7 @@
       }
     }
   </style>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 
 <body>
@@ -253,6 +254,7 @@
     <button onclick="exportarRaias()">Exportar</button>
 
     <button onclick="abrirImportRaias()">Importar</button>
+    <button onclick="exportarImagem()">Exportar Imagem</button>
 
     <div id="raiasContainer"></div>
   </div>
@@ -863,6 +865,32 @@
       }
 
     });
+
+    function exportarImagem() {
+
+      const area = document.getElementById("view-raias");
+
+      // 🔥 garante que picker não aparece
+      const pickerEl = document.getElementById("picker");
+      const oldDisplay = pickerEl.style.display;
+      pickerEl.style.display = "none";
+
+      html2canvas(area, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+        useCORS: true // 🔥 IMPORTANTE
+      }).then(canvas => {
+
+        const link = document.createElement("a");
+        link.download = "raias.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+
+        // restaura picker
+        pickerEl.style.display = oldDisplay;
+
+      });
+    }
   </script>
   <div id="modalExport" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;">
     <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">

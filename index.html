@@ -249,8 +249,11 @@
 
     <button onclick="abrirPicker()">Adicionar Ícone</button>
     <button onclick="addRaia()">+ Raia</button>
+    <button onclick="exportarRaias()">Exportar</button>
+    <button onclick="abrirImportRaias()">Importar</button>
 
     <div id="raiasContainer"></div>
+  </div>
 
   </div>
 
@@ -548,7 +551,7 @@
 
       const el = document.createElement("div");
       el.className = "raia-item";
-
+      el.dataset.id = icon.id;
 
 
       el.innerHTML = `
@@ -572,15 +575,25 @@
 
     }
     function makeDraggable(el) {
-
+      let lastTap = 0;
       let offsetX = 0;
       let offsetY = 0;
       let dragging = false;
       let pointerDown = false;
 
       el.style.touchAction = "none";
-
       el.addEventListener("pointerdown", (e) => {
+
+        const now = Date.now();
+
+        if (now - lastTap < 300) {
+          el.remove();
+          iconesRaias = iconesRaias.filter(i => i !== el);
+          return;
+        }
+
+        lastTap = now;
+
         pointerDown = true;
 
         const rect = el.getBoundingClientRect();
@@ -671,7 +684,108 @@
       pickerEl.style.display = "none";
     });
 
+
+    /* ================= EXPORT / IMPORT RAIAS ================= */
+
+    function exportarRaias() {
+
+      const layout = {
+        raias: raias,
+        itens: iconesRaias.map(el => ({
+          iconId: el.dataset.id,
+          left: el.style.left,
+          top: el.style.top
+        }))
+      };
+
+      jsonExportRaias.value = JSON.stringify(layout, null, 2);
+      modalExport.style.display = "block";
+    }
+
+    function fecharExport() {
+      modalExport.style.display = "none";
+    }
+
+    function abrirImportRaias() {
+      modalImport.style.display = "block";
+    }
+
+    function fecharImport() {
+      modalImport.style.display = "none";
+    }
+
+    function importarRaias() {
+      try {
+        const data = JSON.parse(jsonImportRaias.value);
+
+        // 🔥 valida se todos os ícones existem
+        for (let item of data.itens) {
+          const existe = db.icones.find(i => i.id === item.iconId);
+          if (!existe) {
+            alert("Erro: existe ícone no layout que não está carregado.");
+            return;
+          }
+        }
+
+        // limpa ícones atuais
+        iconesRaias.forEach(el => el.remove());
+        iconesRaias = [];
+
+        // aplica raias
+        raias = data.raias;
+        renderRaias();
+
+        // recria ícones
+        data.itens.forEach(item => {
+
+          const icon = db.icones.find(i => i.id === item.iconId);
+
+          const el = document.createElement("div");
+          el.className = "raia-item";
+          el.dataset.id = icon.id;
+
+          el.innerHTML = `
+        <div class="raia-icon">
+          <div class="icon-bg">
+            <img class="bg" src="resources/backgrounds/${icon.background}">
+            <img class="icon" src="resources/icons/${icon.imagem}">
+          </div>
+          <div class="icon-text">${icon.texto}</div>
+        </div>
+      `;
+
+          el.style.left = item.left;
+          el.style.top = item.top;
+
+          document.getElementById("view-raias").appendChild(el);
+          iconesRaias.push(el);
+
+          makeDraggable(el);
+        });
+
+        fecharImport();
+
+      } catch (e) {
+        alert("JSON inválido");
+      }
+    }
   </script>
+  <div id="modalExport" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;">
+    <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">
+      <h3>Exportar Layout</h3>
+      <textarea id="jsonExportRaias"></textarea>
+      <button onclick="fecharExport()">Fechar</button>
+    </div>
+  </div>
+
+  <div id="modalImport" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;">
+    <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">
+      <h3>Importar Layout</h3>
+      <textarea id="jsonImportRaias"></textarea>
+      <button onclick="importarRaias()">Importar</button>
+      <button onclick="fecharImport()">Cancelar</button>
+    </div>
+  </div>
 
 </body>
 

@@ -1,0 +1,87 @@
+{
+  "tipos": [
+    { "id": "t1", "nome": "Recursos" },
+    { "id": "t2", "nome": "Atividades" },
+    { "id": "t3", "nome": "Ação do professor" }
+  ],
+  "subtipos": [
+    { "id": "s1", "nome": "Recursos", "tipoId": "t1" },
+    { "id": "s2", "nome": "Atividades", "tipoId": "t2" },
+    { "id": "s3", "nome": "Ação do professor", "tipoId": "t3" }
+  ],
+  "icones": [
+    { "id": "i1", "texto": "Exposição de conteúdo e/ou demonstração", "tipoId": "t3", "subtipoId": "s3", "background": "qv.png", "imagem": "1.png" },
+    { "id": "i2", "texto": "Contar exemplos", "tipoId": "t3", "subtipoId": "s3", "background": "ql.png", "imagem": "1.png" },
+    { "id": "i3", "texto": "Feedback validador", "tipoId": "t3", "subtipoId": "s3", "background": "qv.png", "imagem": "5.png" },
+    { "id": "i4", "texto": "Feedback questionador", "tipoId": "t3", "subtipoId": "s3", "background": "ql.png", "imagem": "5.png" },
+    { "id": "i5", "texto": "Convite ao diálogo/mediação", "tipoId": "t3", "subtipoId": "s3", "background": "ql.png", "imagem": "10.png" },
+
+    { "id": "i6", "texto": "Apresentação de modelos", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "1.png" },
+    { "id": "i7", "texto": "Debate", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "1.png" },
+    { "id": "i8", "texto": "Pitch", "tipoId": "t2", "subtipoId": "s2", "background": "cr.png", "imagem": "1.png" },
+
+    { "id": "i9", "texto": "Questionário reativo", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "5.png" },
+    { "id": "i10", "texto": "Autoavaliação", "tipoId": "t2", "subtipoId": "s2", "background": "ca.png", "imagem": "5.png" },
+    { "id": "i11", "texto": "Questionário provocativo/reflexivo", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "5.png" },
+
+    { "id": "i12", "texto": "Organização de informações", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "6.png" },
+    { "id": "i13", "texto": "Mapeamento de conceitos", "tipoId": "t2", "subtipoId": "s2", "background": "ca.png", "imagem": "6.png" },
+    { "id": "i14", "texto": "Curadoria de coleções", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "6.png" },
+    { "id": "i15", "texto": "Cartografias", "tipoId": "t2", "subtipoId": "s2", "background": "cr.png", "imagem": "6.png" },
+
+    { "id": "i16", "texto": "Pesquisa por roteiro/casos com respostas", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "2.png" },
+    { "id": "i17", "texto": "Pesquisa em ambientes controlados/simulados", "tipoId": "t2", "subtipoId": "s2", "background": "ca.png", "imagem": "2.png" },
+    { "id": "i18", "texto": "Prática investigativa", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "2.png" },
+    { "id": "i19", "texto": "Pesquisa em rede", "tipoId": "t2", "subtipoId": "s2", "background": "cr.png", "imagem": "2.png" },
+
+    { "id": "i20", "texto": "Produção de texto dirigida", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "8.png" },
+    { "id": "i21", "texto": "Produção de texto autoral", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "8.png" },
+    { "id": "i22", "texto": "Produção audiovisual dirigida", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "9.png" },
+    { "id": "i23", "texto": "Produção audiovisual", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "9.png" },
+    { "id": "i24", "texto": "Representação visual dirigida", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "11.png" },
+    { "id": "i25", "texto": "Produção visual coletiva/colaborativa", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "11.png" },
+
+    { "id": "i26", "texto": "Programação (repetição de rotinas)", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "3.png" },
+    { "id": "i27", "texto": "Programação criativa", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "3.png" },
+    { "id": "i28", "texto": "Brainstorm", "tipoId": "t2", "subtipoId": "s2", "background": "ca.png", "imagem": "3.png" },
+    { "id": "i29", "texto": "Hackathon", "tipoId": "t2", "subtipoId": "s2", "background": "cr.png", "imagem": "3.png" },
+    { "id": "i30", "texto": "Criação de jogos reativos", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "7.png" },
+    { "id": "i31", "texto": "Criação de jogos coletivos/pervasivos", "tipoId": "t2", "subtipoId": "s2", "background": "cr.png", "imagem": "7.png" },
+
+    { "id": "i32", "texto": "Prática construtiva a partir de modelos", "tipoId": "t2", "subtipoId": "s2", "background": "cv.png", "imagem": "4.png" },
+    { "id": "i33", "texto": "Exercício de habilidades", "tipoId": "t2", "subtipoId": "s2", "background": "ca.png", "imagem": "4.png" },
+    { "id": "i34", "texto": "Práticas construtivas criativas", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "4.png" },
+    { "id": "i35", "texto": "Exercício de problematização", "tipoId": "t2", "subtipoId": "s2", "background": "cr.png", "imagem": "4.png" },
+    { "id": "i36", "texto": "Dinâmica de grupo", "tipoId": "t2", "subtipoId": "s2", "background": "cl.png", "imagem": "10.png" },
+    { "id": "i37", "texto": "Crowdsourcing", "tipoId": "t2", "subtipoId": "s2", "background": "cr.png", "imagem": "10.png" },
+
+    { "id": "i38", "texto": "Texto informativo / diretivo / persuasivo", "tipoId": "t1", "subtipoId": "s1", "background": "tv.png", "imagem": "8.png" },
+    { "id": "i39", "texto": "Explicação audiovisual", "tipoId": "t1", "subtipoId": "s1", "background": "tv.png", "imagem": "9.png" },
+    { "id": "i40", "texto": "Plataforma digital colaborativa", "tipoId": "t1", "subtipoId": "s1", "background": "tr.png", "imagem": "10.png" },
+    { "id": "i41", "texto": "Kits de prototipação e robótica", "tipoId": "t1", "subtipoId": "s1", "background": "tr.png", "imagem": "3.png" },
+    { "id": "i42", "texto": "Jogo reativo", "tipoId": "t1", "subtipoId": "s1", "background": "tv.png", "imagem": "7.png" },
+
+    { "id": "i43", "texto": "Motivação a partir de relações prévias", "tipoId": "t3", "subtipoId": "s3", "background": "qa.png", "imagem": "6.png" },
+    { "id": "i44", "texto": "Explicitar desafios coletivos", "tipoId": "t3", "subtipoId": "s3", "background": "ql.png", "imagem": "7.png" },
+    { "id": "i45", "texto": "Fechamento", "tipoId": "t3", "subtipoId": "s3", "background": "qv.png", "imagem": "6.png" },
+    { "id": "i46", "texto": "Explicitação das relações em rede", "tipoId": "t3", "subtipoId": "s3", "background": "qr.png", "imagem": "6.png" },
+        { "id": "i47", "texto": "Texto argumentativo/interativo/narrativo", "tipoId": "t1", "subtipoId": "s1", "background": "tl.png", "imagem": "8.png" },
+    { "id": "i48", "texto": "Audiovisual narrativo/argumentativo/reflexivo", "tipoId": "t1", "subtipoId": "s1", "background": "tl.png", "imagem": "9.png" },
+
+    { "id": "i49", "texto": "Explicitar desafios em rede", "tipoId": "t3", "subtipoId": "s3", "background": "tr.png", "imagem": "7.png" },
+    { "id": "i50", "texto": "Explicitação de relações/interações", "tipoId": "t3", "subtipoId": "s3", "background": "ql.png", "imagem": "6.png" },
+
+    { "id": "i51", "texto": "Jogo de treinamento de habilidade", "tipoId": "t1", "subtipoId": "s1", "background": "ta.png", "imagem": "7.png" },
+    { "id": "i52", "texto": "Jogo colaborativo/de decisão/simulação", "tipoId": "t1", "subtipoId": "s1", "background": "tl.png", "imagem": "7.png" },
+    { "id": "i53", "texto": "Plataformas gamificadas", "tipoId": "t1", "subtipoId": "s1", "background": "tr.png", "imagem": "10.png" },
+
+    { "id": "i54", "texto": "Dispositivo de autogestão individual ou grupo", "tipoId": "t1", "subtipoId": "s1", "background": "tl.png", "imagem": "5.png" },
+    { "id": "i55", "texto": "Tipologias para identificação", "tipoId": "t1", "subtipoId": "s1", "background": "ta.png", "imagem": "12.png" },
+
+    { "id": "i56", "texto": "Apresentação de slides", "tipoId": "t1", "subtipoId": "s1", "background": "tv.png", "imagem": "1.png" },
+    { "id": "i57", "texto": "Imagem explicativa", "tipoId": "t1", "subtipoId": "s1", "background": "tv.png", "imagem": "11.png" },
+    { "id": "i58", "texto": "Imagem projetiva", "tipoId": "t1", "subtipoId": "s1", "background": "ta.png", "imagem": "11.png" },
+    { "id": "i59", "texto": "Imagens interpretativas", "tipoId": "t1", "subtipoId": "s1", "background": "tl.png", "imagem": "11.png" }
+  
+  ]
+}

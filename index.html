@@ -548,7 +548,7 @@
 
       makeDraggable(el);
 
- 
+
     }
     function makeDraggable(el) {
 
@@ -602,8 +602,22 @@
       renderPickers();
       renderIcons();
     }
+    async function carregarJSONInicial() {
+      try {
+        const res = await fetch("resources/icons.json");
+        const data = await res.json();
 
-    refreshAll();
+        // 🔥 substitui o banco inteiro
+        db = data;
+
+        refreshAll();
+      } catch (e) {
+        console.warn("Não carregou icons.json, usando padrão");
+        refreshAll();
+      }
+    }
+
+    carregarJSONInicial();
     renderRaias();
 
   </script>

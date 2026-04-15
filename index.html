@@ -505,8 +505,19 @@
       // 🔥 TOGGLE
       if (picker.style.display === "block") {
         picker.style.display = "none";
+
+        // 🔥 remove estado do histórico
+        if (history.state?.pickerOpen) {
+          history.back();
+        }
+
         return;
       }
+
+      picker.style.display = "block";
+
+      // 🔥 adiciona estado no histórico
+      history.pushState({ pickerOpen: true }, "");
 
       picker.style.display = "block";
       picker.innerHTML = "";
@@ -612,8 +623,8 @@
 
         dragging = true;
 
-        let x = e.clientX - offsetX;
-        let y = e.clientY - offsetY;
+        let x = e.clientX + window.scrollX - offsetX;
+        let y = e.clientY + window.scrollY - offsetY;
 
         el.style.left = x + "px";
         el.style.top = y + "px";
@@ -842,6 +853,16 @@
       };
       reader.readAsText(file);
     }
+
+    window.addEventListener("popstate", (e) => {
+
+      // se o menu estiver aberto → fecha ao invés de sair da página
+      if (picker.style.display === "block") {
+        picker.style.display = "none";
+        return;
+      }
+
+    });
   </script>
   <div id="modalExport" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;">
     <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">

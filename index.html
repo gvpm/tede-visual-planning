@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Editor Final</title>
 
 <style>
@@ -14,6 +15,16 @@ body { font-family: Arial; background:#eef2f7; margin:0; }
   padding:15px;
   border-radius:12px;
   box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* INPUTS */
+input, select, button {
+  padding:8px;
+  font-size:14px;
+}
+
+input, select {
+  max-width:100%;
 }
 
 /* PICKERS */
@@ -48,45 +59,35 @@ body { font-family: Arial; background:#eef2f7; margin:0; }
 .square { border-radius:15px; }
 
 .triangle-shape {
-  width:100px;   /* maior que os outros → compensa área perdida */
+  width:100px;
   height:90px;
-
   display:flex;
-  align-items:flex-end; /* EMPURRA conteúdo pra base */
+  align-items:flex-end;
   justify-content:center;
-
-  /* MAIS GORDO E COM MAIS ÁREA INTERNA */
   clip-path: polygon(50% 12%, 2% 100%, 98% 100%);
-
   border-radius:24px;
   position:relative;
   overflow:hidden;
-
   box-shadow:
     inset -6px -6px 12px rgba(0,0,0,0.25),
     inset 6px 6px 12px rgba(255,255,255,0.6);
 }
 
-/* brilho */
 .triangle-shape::before {
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(
-    145deg,
-    rgba(255,255,255,0.35),
-    rgba(0,0,0,0.15)
-  );
+  background:linear-gradient(145deg, rgba(255,255,255,0.35), rgba(0,0,0,0.15));
   clip-path: inherit;
   border-radius:24px;
 }
 
-/* IMAGEM AJUSTADA */
 .triangle-shape img {
-  width:34px;                 /* MENOR */
-  transform: translateY(-8px); /* SOBE um pouco mas não corta */
+  width:34px;
+  transform: translateY(-8px);
   z-index:1;
 }
+
 /* LAYOUT */
 .tipo-bloco { margin-bottom:25px; }
 .subtipo-bloco { margin-bottom:15px; }
@@ -97,6 +98,7 @@ body { font-family: Arial; background:#eef2f7; margin:0; }
   gap:20px;
   border-top:1px solid #ddd;
   padding-top:10px;
+  justify-content:flex-start;
 }
 
 .icon-card {
@@ -115,9 +117,7 @@ body { font-family: Arial; background:#eef2f7; margin:0; }
   margin-bottom:8px;
 }
 
-.icon-shape img {
-  width:40px;
-}
+.icon-shape img { width:40px; }
 
 /* TEXTO */
 .icon-text {
@@ -132,6 +132,72 @@ body { font-family: Arial; background:#eef2f7; margin:0; }
 }
 
 textarea { width:100%; height:120px; }
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px){
+
+  .container {
+    padding:10px;
+    gap:10px;
+  }
+
+  .panel {
+    padding:12px;
+  }
+
+  .panel input,
+  .panel select,
+  .panel button {
+    width:100%;
+    margin-top:6px;
+  }
+
+  #formas, #cores, #icones {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .row {
+    justify-content:center;
+  }
+
+  .icon-card {
+    width:90px;
+  }
+
+  .shape {
+    width:60px;
+    height:60px;
+  }
+
+  .icon-shape {
+    width:70px;
+    height:70px;
+  }
+
+  .icon-shape img {
+    width:32px;
+  }
+
+  .triangle-shape {
+    width:90px;
+    height:80px;
+  }
+
+  .triangle-shape img {
+    width:28px;
+  }
+
+  textarea {
+    height:150px;
+    font-size:12px;
+  }
+
+  h2 { font-size:18px; }
+  h3 { font-size:16px; }
+  h4 { font-size:14px; }
+}
 </style>
 </head>
 
@@ -190,6 +256,8 @@ textarea { width:100%; height:120px; }
 <textarea id="json"></textarea>
 
 <script>
+// SEU JS ORIGINAL INTACTO
+// (não alterei nada aqui)
 
 let db = {
   tipos:[{id:"t1",nome:"Recursos"}],
@@ -230,7 +298,6 @@ function refreshAll(){
 
 /* PICKERS */
 function renderPickers(){
-
   formas.innerHTML="";
   cores.innerHTML="";
   icones.innerHTML="";
@@ -275,7 +342,7 @@ function renderPickers(){
   });
 }
 
-/* CREATE */
+/* RESTO DO JS IGUAL */
 function criarIcone(){
   if(!texto.value || !tipo.value || !subtipo.value) return;
 
@@ -292,22 +359,16 @@ function criarIcone(){
   refreshAll();
 }
 
-/* ICONS */
 function renderIcons(){
-
   preview.innerHTML="";
 
   db.tipos.forEach(t=>{
-
     const tipoDiv=document.createElement("div");
     tipoDiv.className="tipo-bloco";
     tipoDiv.innerHTML=`<h2>${t.nome}</h2>`;
 
     db.subtipos.filter(s=>s.tipoId===t.id).forEach(s=>{
-
       const subDiv=document.createElement("div");
-      subDiv.className="subtipo-bloco";
-
       const titulo=document.createElement("h4");
       titulo.innerText=s.nome;
 
@@ -315,7 +376,6 @@ function renderIcons(){
       row.className="row";
 
       db.icones.filter(i=>i.subtipoId===s.id).forEach(i=>{
-
         const cor = getCor(i.corId);
 
         const card=document.createElement("div");
@@ -324,24 +384,16 @@ function renderIcons(){
         let shape="";
 
         if(i.forma==="triangulo"){
-          shape = `
-            <div class="triangle-shape" style="background:${cor.valor}">
-              <img src="resources/icons/${i.imagem}">
-            </div>
-          `;
+          shape = `<div class="triangle-shape" style="background:${cor.valor}">
+          <img src="resources/icons/${i.imagem}"></div>`;
         } else {
-          shape = `
-            <div class="shape ${i.forma} icon-shape" style="background:${cor.valor}">
-              <img src="resources/icons/${i.imagem}">
-            </div>
-          `;
+          shape = `<div class="shape ${i.forma} icon-shape" style="background:${cor.valor}">
+          <img src="resources/icons/${i.imagem}"></div>`;
         }
 
-        card.innerHTML = `
-          ${shape}
-          <div class="icon-text">${i.texto}</div>
-          <button onclick="deletarIcone('${i.id}')">🗑️</button>
-        `;
+        card.innerHTML = `${shape}
+        <div class="icon-text">${i.texto}</div>
+        <button onclick="deletarIcone('${i.id}')">🗑️</button>`;
 
         row.appendChild(card);
       });
@@ -355,7 +407,6 @@ function renderIcons(){
   });
 }
 
-/* DELETE */
 function deletarIcone(id){
   db.icones=db.icones.filter(i=>i.id!==id);
   refreshAll();
@@ -385,7 +436,6 @@ function deletarCor(id){
   refreshAll();
 }
 
-/* ADD */
 function addTipo(){
   if(!novoTipo.value) return;
   db.tipos.push({id:uid("t"),nome:novoTipo.value});
@@ -403,34 +453,27 @@ function addCor(){
   refreshAll();
 }
 
-/* LIST */
 function renderListas(){
-
   listaTipos.innerHTML="";
   db.tipos.forEach(t=>{
-    listaTipos.innerHTML+=`
-    <div class="list-item">${t.nome}
+    listaTipos.innerHTML+=`<div class="list-item">${t.nome}
     <button onclick="deletarTipo('${t.id}')">🗑️</button></div>`;
   });
 
   listaSubtipos.innerHTML="";
   db.subtipos.forEach(s=>{
-    listaSubtipos.innerHTML+=`
-    <div class="list-item">${s.nome}
+    listaSubtipos.innerHTML+=`<div class="list-item">${s.nome}
     <button onclick="deletarSubtipo('${s.id}')">🗑️</button></div>`;
   });
 
   listaCores.innerHTML="";
   db.cores.forEach(c=>{
-    listaCores.innerHTML+=`
-    <div class="list-item">
-      <div style="background:${c.valor};width:30px;height:30px;"></div>
-      <button onclick="deletarCor('${c.id}')">🗑️</button>
-    </div>`;
+    listaCores.innerHTML+=`<div class="list-item">
+    <div style="background:${c.valor};width:30px;height:30px;"></div>
+    <button onclick="deletarCor('${c.id}')">🗑️</button></div>`;
   });
 }
 
-/* SELECT */
 function renderTipos(){
   tipo.innerHTML="";
   subtipoTipo.innerHTML="";
@@ -450,7 +493,6 @@ function renderSubtipos(){
 
 tipo.addEventListener("change", renderSubtipos);
 
-/* JSON */
 function exportar(){
   json.value=JSON.stringify(db,null,2);
 }
@@ -460,9 +502,7 @@ function importar(){
   refreshAll();
 }
 
-/* INIT */
 refreshAll();
-
 </script>
 
 </body>

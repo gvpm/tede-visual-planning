@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Editor Final</title>
+
+<style>
+body { font-family: Arial; background:#eef2f7; margin:0; }
+
+.container { display:flex; flex-direction:column; gap:15px; padding:15px; }
+
+.panel {
+  background:white;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* PICKERS */
+.shape-option, .color-option, .icon-option {
+  margin:5px; cursor:pointer; display:inline-block;
+}
+
+.shape-option { border:2px solid transparent; }
+.shape-option.selected { border:2px solid black; }
+
+.color-option {
+  width:35px;height:35px;
+  border-radius:8px;
+  border:3px solid transparent;
+}
+.color-selected { border:3px solid black; }
+
+.icon-option {
+  width:45px;
+  border:2px solid transparent;
+}
+.icon-selected { border:2px solid black; }
+
+/* FORMAS */
+.shape {
+  width:70px;height:70px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2),
+              inset 5px 5px 10px rgba(255,255,255,0.6);
+}
+.circle { border-radius:50%; }
+.square { border-radius:15px; }
+
+.triangle-shape {
+  width:100px;   /* maior que os outros → compensa área perdida */
+  height:90px;
+
+  display:flex;
+  align-items:flex-end; /* EMPURRA conteúdo pra base */
+  justify-content:center;
+
+  /* MAIS GORDO E COM MAIS ÁREA INTERNA */
+  clip-path: polygon(50% 12%, 2% 100%, 98% 100%);
+
+  border-radius:24px;
+  position:relative;
+  overflow:hidden;
+
+  box-shadow:
+    inset -6px -6px 12px rgba(0,0,0,0.25),
+    inset 6px 6px 12px rgba(255,255,255,0.6);
+}
+
+/* brilho */
+.triangle-shape::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    145deg,
+    rgba(255,255,255,0.35),
+    rgba(0,0,0,0.15)
+  );
+  clip-path: inherit;
+  border-radius:24px;
+}
+
+/* IMAGEM AJUSTADA */
+.triangle-shape img {
+  width:34px;                 /* MENOR */
+  transform: translateY(-8px); /* SOBE um pouco mas não corta */
+  z-index:1;
+}
+/* LAYOUT */
+.tipo-bloco { margin-bottom:25px; }
+.subtipo-bloco { margin-bottom:15px; }
+
+.row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  border-top:1px solid #ddd;
+  padding-top:10px;
+}
+
+.icon-card {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:110px;
+}
+
+.icon-shape {
+  width:80px;
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:8px;
+}
+
+.icon-shape img {
+  width:40px;
+}
+
+/* TEXTO */
+.icon-text {
+  text-align:center;
+  font-size:14px;
+  margin-bottom:5px;
+}
+
+.list-item {
+  display:flex;
+  justify-content:space-between;
+}
+
+textarea { width:100%; height:120px; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="panel">
+<h3>Novo Ícone</h3>
+
+<input id="texto" placeholder="Texto">
+<select id="tipo"></select>
+<select id="subtipo"></select>
+
+<h4>Forma</h4>
+<div id="formas"></div>
+
+<h4>Cor</h4>
+<div id="cores"></div>
+
+<h4>Ícone</h4>
+<div id="icones"></div>
+
+<button onclick="criarIcone()">Criar</button>
+</div>
+
+<div class="panel">
+<h3>Tipos</h3>
+<input id="novoTipo"><button onclick="addTipo()">+</button>
+<div id="listaTipos"></div>
+</div>
+
+<div class="panel">
+<h3>Subtipos</h3>
+<input id="novoSubtipo">
+<select id="subtipoTipo"></select>
+<button onclick="addSubtipo()">+</button>
+<div id="listaSubtipos"></div>
+</div>
+
+<div class="panel">
+<h3>Cores</h3>
+<input type="color" id="novaCor">
+<button onclick="addCor()">+</button>
+<div id="listaCores"></div>
+</div>
+
+</div>
+
+<h3 style="padding-left:15px;">Ícones</h3>
+<div id="preview" style="padding:15px;"></div>
+
+<h3 style="padding-left:15px;">JSON</h3>
+<button onclick="exportar()">Exportar</button>
+<button onclick="importar()">Importar</button>
+<textarea id="json"></textarea>
+
+<script>
+
+let db = {
+  tipos:[{id:"t1",nome:"Recursos"}],
+  subtipos:[{id:"s1",nome:"Interativo",tipoId:"t1"}],
+  cores:[
+    {id:"c1",valor:"#2ecc71"},
+    {id:"c2",valor:"#f39c12"},
+    {id:"c3",valor:"#3498db"},
+    {id:"c4",valor:"#e84393"}
+  ],
+  icones:[]
+};
+
+let selecionado = {
+  forma:"circle",
+  corId:"c1",
+  imagem:"1.png"
+};
+
+const formasLista = ["circle","square","triangulo"];
+const imagensDisponiveis = ["1.png","2.png","3.png","4.png"];
+
+function uid(prefix){
+  return prefix + Date.now();
+}
+
+function getCor(id){
+  return db.cores.find(c=>c.id===id) || db.cores[0];
+}
+
+function refreshAll(){
+  renderTipos();
+  renderSubtipos();
+  renderListas();
+  renderPickers();
+  renderIcons();
+}
+
+/* PICKERS */
+function renderPickers(){
+
+  formas.innerHTML="";
+  cores.innerHTML="";
+  icones.innerHTML="";
+
+  const corSelecionada = getCor(selecionado.corId);
+
+  formasLista.forEach(f=>{
+    let el=document.createElement("div");
+    el.className="shape-option";
+    if(f===selecionado.forma) el.classList.add("selected");
+
+    if(f==="triangulo"){
+      el.innerHTML=`<div class="triangle-shape" style="background:${corSelecionada.valor}"></div>`;
+    } else {
+      el.innerHTML=`<div class="shape ${f}" style="background:${corSelecionada.valor}"></div>`;
+    }
+
+    el.onclick=()=>{selecionado.forma=f;renderPickers();}
+    formas.appendChild(el);
+  });
+
+  db.cores.forEach(c=>{
+    let el=document.createElement("div");
+    el.className="color-option";
+    el.style.background=c.valor;
+
+    if(c.id===selecionado.corId) el.classList.add("color-selected");
+
+    el.onclick=()=>{selecionado.corId=c.id;renderPickers();}
+    cores.appendChild(el);
+  });
+
+  imagensDisponiveis.forEach(img=>{
+    let el=document.createElement("img");
+    el.src="resources/icons/"+img;
+    el.className="icon-option";
+
+    if(img===selecionado.imagem) el.classList.add("icon-selected");
+
+    el.onclick=()=>{selecionado.imagem=img;renderPickers();}
+    icones.appendChild(el);
+  });
+}
+
+/* CREATE */
+function criarIcone(){
+  if(!texto.value || !tipo.value || !subtipo.value) return;
+
+  db.icones.push({
+    id: uid("i"),
+    texto:texto.value,
+    tipoId:tipo.value,
+    subtipoId:subtipo.value,
+    forma:selecionado.forma,
+    corId:selecionado.corId,
+    imagem:selecionado.imagem
+  });
+
+  refreshAll();
+}
+
+/* ICONS */
+function renderIcons(){
+
+  preview.innerHTML="";
+
+  db.tipos.forEach(t=>{
+
+    const tipoDiv=document.createElement("div");
+    tipoDiv.className="tipo-bloco";
+    tipoDiv.innerHTML=`<h2>${t.nome}</h2>`;
+
+    db.subtipos.filter(s=>s.tipoId===t.id).forEach(s=>{
+
+      const subDiv=document.createElement("div");
+      subDiv.className="subtipo-bloco";
+
+      const titulo=document.createElement("h4");
+      titulo.innerText=s.nome;
+
+      const row=document.createElement("div");
+      row.className="row";
+
+      db.icones.filter(i=>i.subtipoId===s.id).forEach(i=>{
+
+        const cor = getCor(i.corId);
+
+        const card=document.createElement("div");
+        card.className="icon-card";
+
+        let shape="";
+
+        if(i.forma==="triangulo"){
+          shape = `
+            <div class="triangle-shape" style="background:${cor.valor}">
+              <img src="resources/icons/${i.imagem}">
+            </div>
+          `;
+        } else {
+          shape = `
+            <div class="shape ${i.forma} icon-shape" style="background:${cor.valor}">
+              <img src="resources/icons/${i.imagem}">
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          ${shape}
+          <div class="icon-text">${i.texto}</div>
+          <button onclick="deletarIcone('${i.id}')">🗑️</button>
+        `;
+
+        row.appendChild(card);
+      });
+
+      subDiv.appendChild(titulo);
+      subDiv.appendChild(row);
+      tipoDiv.appendChild(subDiv);
+    });
+
+    preview.appendChild(tipoDiv);
+  });
+}
+
+/* DELETE */
+function deletarIcone(id){
+  db.icones=db.icones.filter(i=>i.id!==id);
+  refreshAll();
+}
+
+function deletarTipo(id){
+  db.subtipos=db.subtipos.filter(s=>s.tipoId!==id);
+  db.icones=db.icones.filter(i=>i.tipoId!==id);
+  db.tipos=db.tipos.filter(t=>t.id!==id);
+  refreshAll();
+}
+
+function deletarSubtipo(id){
+  db.icones=db.icones.filter(i=>i.subtipoId!==id);
+  db.subtipos=db.subtipos.filter(s=>s.id!==id);
+  refreshAll();
+}
+
+function deletarCor(id){
+  db.icones=db.icones.filter(i=>i.corId!==id);
+  db.cores=db.cores.filter(c=>c.id!==id);
+
+  if(selecionado.corId===id){
+    selecionado.corId = db.cores[0]?.id;
+  }
+
+  refreshAll();
+}
+
+/* ADD */
+function addTipo(){
+  if(!novoTipo.value) return;
+  db.tipos.push({id:uid("t"),nome:novoTipo.value});
+  refreshAll();
+}
+
+function addSubtipo(){
+  if(!novoSubtipo.value) return;
+  db.subtipos.push({id:uid("s"),nome:novoSubtipo.value,tipoId:subtipoTipo.value});
+  refreshAll();
+}
+
+function addCor(){
+  db.cores.push({id:uid("c"),valor:novaCor.value});
+  refreshAll();
+}
+
+/* LIST */
+function renderListas(){
+
+  listaTipos.innerHTML="";
+  db.tipos.forEach(t=>{
+    listaTipos.innerHTML+=`
+    <div class="list-item">${t.nome}
+    <button onclick="deletarTipo('${t.id}')">🗑️</button></div>`;
+  });
+
+  listaSubtipos.innerHTML="";
+  db.subtipos.forEach(s=>{
+    listaSubtipos.innerHTML+=`
+    <div class="list-item">${s.nome}
+    <button onclick="deletarSubtipo('${s.id}')">🗑️</button></div>`;
+  });
+
+  listaCores.innerHTML="";
+  db.cores.forEach(c=>{
+    listaCores.innerHTML+=`
+    <div class="list-item">
+      <div style="background:${c.valor};width:30px;height:30px;"></div>
+      <button onclick="deletarCor('${c.id}')">🗑️</button>
+    </div>`;
+  });
+}
+
+/* SELECT */
+function renderTipos(){
+  tipo.innerHTML="";
+  subtipoTipo.innerHTML="";
+  db.tipos.forEach(t=>{
+    tipo.innerHTML+=`<option value="${t.id}">${t.nome}</option>`;
+    subtipoTipo.innerHTML+=`<option value="${t.id}">${t.nome}</option>`;
+  });
+}
+
+function renderSubtipos(){
+  subtipo.innerHTML="";
+  db.subtipos.filter(s=>s.tipoId===tipo.value)
+  .forEach(s=>{
+    subtipo.innerHTML+=`<option value="${s.id}">${s.nome}</option>`;
+  });
+}
+
+tipo.addEventListener("change", renderSubtipos);
+
+/* JSON */
+function exportar(){
+  json.value=JSON.stringify(db,null,2);
+}
+
+function importar(){
+  db=JSON.parse(json.value);
+  refreshAll();
+}
+
+/* INIT */
+refreshAll();
+
+</script>
+
+</body>
+</html>

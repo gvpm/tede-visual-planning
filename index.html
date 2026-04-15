@@ -199,6 +199,10 @@
 
   <!-- ================= ICONES ================= -->
   <div id="view-icones" class="view active">
+    <div style="padding:10px; display:flex; gap:10px;">
+      <button onclick="exportar()">Exportar</button>
+      <button onclick="abrirImportIcons()">Importar</button>
+    </div>
 
     <div class="container">
 
@@ -237,10 +241,7 @@
     <h3 style="padding-left:15px;">Ícones</h3>
     <div id="preview" style="padding:15px;"></div>
 
-    <h3 style="padding-left:15px;">JSON</h3>
-    <button onclick="exportar()">Exportar</button>
-    <button onclick="importar()">Importar</button>
-    <textarea id="json"></textarea>
+
 
   </div>
 
@@ -250,6 +251,7 @@
     <button onclick="abrirPicker()">Adicionar Ícone</button>
     <button onclick="addRaia()">+ Raia</button>
     <button onclick="exportarRaias()">Exportar</button>
+
     <button onclick="abrirImportRaias()">Importar</button>
 
     <div id="raiasContainer"></div>
@@ -634,12 +636,12 @@
 
     /* ================= JSON ================= */
     function exportar() {
-      json.value = JSON.stringify(db, null, 2);
+      jsonExportIcons.value = JSON.stringify(db, null, 2);
+      modalExportIcons.style.display = "block";
     }
 
-    function importar() {
-      db = JSON.parse(json.value);
-      refreshAll();
+    function abrirImportIcons() {
+      modalImportIcons.style.display = "block";
     }
 
     /* ================= INIT ================= */
@@ -769,11 +771,88 @@
         alert("JSON inválido");
       }
     }
+
+    function baixarArquivo(nome, conteudo) {
+      const blob = new Blob([conteudo], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = nome;
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+
+
+    function fecharExportIcons() {
+      modalExportIcons.style.display = "none";
+    }
+
+    function fecharImportIcons() {
+      modalImportIcons.style.display = "none";
+    }
+
+    function copiarIcons() {
+      navigator.clipboard.writeText(jsonExportIcons.value);
+    }
+
+    function baixarIcons() {
+      baixarArquivo("icons.json", jsonExportIcons.value);
+    }
+
+    function importarIconsModal() {
+      try {
+        db = JSON.parse(jsonImportIcons.value);
+        refreshAll();
+        fecharImportIcons();
+      } catch {
+        alert("JSON inválido");
+      }
+    }
+
+    function uploadIcons(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        jsonImportIcons.value = reader.result;
+      };
+      reader.readAsText(file);
+    }
+
+
+    function copiarRaias() {
+      navigator.clipboard.writeText(jsonExportRaias.value);
+    }
+
+    function baixarRaias() {
+      baixarArquivo("raias.json", jsonExportRaias.value);
+    }
+
+    function uploadRaias(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        jsonImportRaias.value = reader.result;
+      };
+      reader.readAsText(file);
+    }
   </script>
   <div id="modalExport" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;">
     <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">
       <h3>Exportar Layout</h3>
       <textarea id="jsonExportRaias"></textarea>
+
+      <br><br>
+
+      <button onclick="copiarRaias()">Copiar</button>
+      <button onclick="baixarRaias()">Baixar</button>
+
       <button onclick="fecharExport()">Fechar</button>
     </div>
   </div>
@@ -782,8 +861,45 @@
     <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">
       <h3>Importar Layout</h3>
       <textarea id="jsonImportRaias"></textarea>
+
+      <br><br>
+
+      <input type="file" onchange="uploadRaias(event)">
+
       <button onclick="importarRaias()">Importar</button>
       <button onclick="fecharImport()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- EXPORT ICONS -->
+  <div id="modalExportIcons" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;">
+    <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">
+      <h3>Exportar Ícones</h3>
+
+      <textarea id="jsonExportIcons"></textarea>
+
+      <br><br>
+
+      <button onclick="copiarIcons()">Copiar</button>
+      <button onclick="baixarIcons()">Baixar</button>
+
+      <button onclick="fecharExportIcons()">Fechar</button>
+    </div>
+  </div>
+
+  <!-- IMPORT ICONS -->
+  <div id="modalImportIcons" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999999;">
+    <div style="background:white;padding:15px;margin:50px auto;max-width:500px;">
+      <h3>Importar Ícones</h3>
+
+      <textarea id="jsonImportIcons"></textarea>
+
+      <br><br>
+
+      <input type="file" onchange="uploadIcons(event)">
+
+      <button onclick="importarIconsModal()">Importar</button>
+      <button onclick="fecharImportIcons()">Cancelar</button>
     </div>
   </div>
 

@@ -90,6 +90,13 @@
       width: 40px;
     }
 
+    /* 🔥 BLOQUEIA DRAG NATIVO DAS IMAGENS */
+    .icon-bg img {
+      pointer-events: none;
+      user-drag: none;
+      -webkit-user-drag: none;
+    }
+
     /* LISTA */
     .row {
       display: flex;
@@ -108,8 +115,18 @@
     }
 
     .icon-text {
-      font-size: 14px;
+      font-size: 12px;
       word-break: break-word;
+      text-align: center;
+      max-width: 110px;
+      line-height: 1.2;
+    }
+
+    .raia-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .list-item {
@@ -127,13 +144,14 @@
     .raia {
       border: 2px dashed #aaa;
       margin: 10px 0;
-      height: 160px;
+      height: 200px;
       position: relative;
       background: #f9f9f9;
     }
 
     .raia-title {
-      background: #4CAF50;
+      background: #444;
+      /* cinza levemente mais claro que #333 */
       color: white;
       padding: 5px;
       display: flex;
@@ -142,9 +160,13 @@
 
     .raia-item {
       position: absolute;
-      cursor: move;
+      cursor: grab;
+      /* 🔥 melhor UX */
       z-index: 99999;
-      /* 🔥 MAIS ALTO */
+    }
+
+    .raia-item:active {
+      cursor: grabbing;
     }
 
     /* MOBILE */
@@ -530,15 +552,14 @@
 
 
       el.innerHTML = `
-    <div style="text-align:center;">
-      <div class="icon-bg">
-        <img class="bg" src="resources/backgrounds/${icon.background}">
-        <img class="icon" src="resources/icons/${icon.imagem}">
-      </div>
-      <div style="font-size:12px;">${icon.texto}</div>
+  <div class="raia-icon">
+    <div class="icon-bg">
+      <img class="bg" src="resources/backgrounds/${icon.background}">
+      <img class="icon" src="resources/icons/${icon.imagem}">
     </div>
-  `;
-
+    <div class="icon-text">${icon.texto}</div>
+  </div>
+`;
       document.getElementById("view-raias").appendChild(el);
       iconesRaias.push(el);
 
@@ -555,11 +576,12 @@
       let offsetX = 0;
       let offsetY = 0;
       let dragging = false;
+      let pointerDown = false;
 
-      el.style.touchAction = "none"; // 🔥 ESSENCIAL mobile
+      el.style.touchAction = "none";
 
       el.addEventListener("pointerdown", (e) => {
-        dragging = true;
+        pointerDown = true;
 
         const rect = el.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
@@ -569,7 +591,11 @@
       });
 
       el.addEventListener("pointermove", (e) => {
-        if (!dragging) return;
+
+        // 🔥 SÓ COMEÇA DRAG SE ESTIVER PRESSIONADO
+        if (!pointerDown) return;
+
+        dragging = true;
 
         let x = e.clientX - offsetX;
         let y = e.clientY - offsetY;
@@ -579,8 +605,17 @@
       });
 
       el.addEventListener("pointerup", (e) => {
+        pointerDown = false;
         dragging = false;
-        el.releasePointerCapture(e.pointerId);
+
+        try {
+          el.releasePointerCapture(e.pointerId);
+        } catch { }
+      });
+
+      el.addEventListener("pointercancel", () => {
+        pointerDown = false;
+        dragging = false;
       });
     }
 
@@ -619,6 +654,22 @@
 
     carregarJSONInicial();
     renderRaias();
+
+    document.addEventListener("pointerdown", (e) => {
+      const pickerEl = document.getElementById("picker");
+
+      // se não está aberto, ignora
+      if (pickerEl.style.display !== "block") return;
+
+      // se clicou dentro do picker → não fecha
+      if (pickerEl.contains(e.target)) return;
+
+      // se clicou no botão abrir → não fecha
+      if (e.target.closest("button")?.innerText === "Adicionar Ícone") return;
+
+      // qualquer outro clique → fecha
+      pickerEl.style.display = "none";
+    });
 
   </script>
 

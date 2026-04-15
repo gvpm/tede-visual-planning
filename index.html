@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Final</title>
+  <title>TEDE - Planejamento Visual</title>
 
   <style>
     body {
@@ -37,9 +37,37 @@
 
     /* MENU */
     .topbar {
-      background: #333;
-      color: white;
-      padding: 10px;
+      background: white;
+      padding: 10px 15px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ESQUERDA */
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      height: 32px;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #444;
+      /* cinza escuro */
+    }
+
+    /* DIREITA */
+    .topbar-right select {
+      padding: 6px 10px;
     }
 
     /* VIEWS */
@@ -191,15 +219,23 @@
 <body>
 
   <div class="topbar">
-    Modo:
-    <select onchange="trocarModo(this.value)">
-      <option value="icones">Ícones</option>
-      <option value="raias">Raias</option>
-    </select>
+
+    <div class="topbar-left">
+      <img src="resources/tede_logo.png" class="logo">
+      <span class="title">Planejamento Visual</span>
+    </div>
+
+    <div class="topbar-right">
+      <select onchange="trocarModo(this.value)">
+        <option value="raias">Raias</option>
+        <option value="icones">Ícones</option>
+      </select>
+    </div>
+
   </div>
 
   <!-- ================= ICONES ================= -->
-  <div id="view-icones" class="view active">
+  <div id="view-icones" class="view">
     <div style="padding:10px; display:flex; gap:10px;">
       <button onclick="exportar()">Exportar</button>
       <button onclick="abrirImportIcons()">Importar</button>
@@ -247,7 +283,7 @@
   </div>
 
   <!-- ================= RAIAS ================= -->
-  <div id="view-raias" class="view" style="padding:10px;">
+  <div id="view-raias" class="view active" style="padding:10px;">
 
     <button onclick="abrirPicker()">Adicionar Ícone</button>
     <button onclick="addRaia()">+ Raia</button>

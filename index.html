@@ -1,509 +1,613 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editor Final</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor Final</title>
 
-<style>
-body { font-family: Arial; background:#eef2f7; margin:0; }
+  <style>
+    body {
+      font-family: Arial;
+      background: #eef2f7;
+      margin: 0;
+    }
 
-.container { display:flex; flex-direction:column; gap:15px; padding:15px; }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px;
+    }
 
-.panel {
-  background:white;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
+    .panel {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
-/* INPUTS */
-input, select, button {
-  padding:8px;
-  font-size:14px;
-}
+    input,
+    select,
+    button {
+      padding: 8px;
+      font-size: 14px;
+      max-width: 100%;
+    }
 
-input, select {
-  max-width:100%;
-}
+    /* MENU */
+    .topbar {
+      background: #333;
+      color: white;
+      padding: 10px;
+    }
 
-/* PICKERS */
-.shape-option, .color-option, .icon-option {
-  margin:5px; cursor:pointer; display:inline-block;
-}
+    /* VIEWS */
+    .view {
+      display: none;
+    }
 
-.shape-option { border:2px solid transparent; }
-.shape-option.selected { border:2px solid black; }
+    .view.active {
+      display: block;
+    }
 
-.color-option {
-  width:35px;height:35px;
-  border-radius:8px;
-  border:3px solid transparent;
-}
-.color-selected { border:3px solid black; }
+    /* PICKERS */
+    .bg-option,
+    .icon-option {
+      margin: 5px;
+      cursor: pointer;
+      display: inline-block;
+      border: 2px solid transparent;
+    }
 
-.icon-option {
-  width:45px;
-  border:2px solid transparent;
-}
-.icon-selected { border:2px solid black; }
+    .bg-selected,
+    .icon-selected {
+      border: 2px solid black;
+    }
 
-/* FORMAS */
-.shape {
-  width:70px;height:70px;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2),
-              inset 5px 5px 10px rgba(255,255,255,0.6);
-}
-.circle { border-radius:50%; }
-.square { border-radius:15px; }
+    .bg-preview {
+      width: 70px;
+    }
 
-.triangle-shape {
-  width:100px;
-  height:90px;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  clip-path: polygon(50% 12%, 2% 100%, 98% 100%);
-  border-radius:24px;
-  position:relative;
-  overflow:hidden;
-  box-shadow:
-    inset -6px -6px 12px rgba(0,0,0,0.25),
-    inset 6px 6px 12px rgba(255,255,255,0.6);
-}
+    /* ÍCONE */
+    .icon-bg {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      margin-bottom: 8px;
+    }
 
-.triangle-shape::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(145deg, rgba(255,255,255,0.35), rgba(0,0,0,0.15));
-  clip-path: inherit;
-  border-radius:24px;
-}
+    .icon-bg img.bg {
+      width: 100%;
+      height: 100%;
+    }
 
-.triangle-shape img {
-  width:34px;
-  transform: translateY(-8px);
-  z-index:1;
-}
+    .icon-bg img.icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 40px;
+    }
 
-/* LAYOUT */
-.tipo-bloco { margin-bottom:25px; }
-.subtipo-bloco { margin-bottom:15px; }
+    /* LISTA */
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
 
-.row {
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
-  border-top:1px solid #ddd;
-  padding-top:10px;
-  justify-content:flex-start;
-}
+    .icon-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 110px;
+      text-align: center;
+    }
 
-.icon-card {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  width:110px;
-}
+    .icon-text {
+      font-size: 14px;
+      word-break: break-word;
+    }
 
-.icon-shape {
-  width:80px;
-  height:80px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin-bottom:8px;
-}
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.icon-shape img { width:40px; }
+    textarea {
+      width: 100%;
+      height: 120px;
+    }
 
-/* TEXTO */
-.icon-text {
-  text-align:center;
-  font-size:14px;
-  margin-bottom:5px;
-}
+    /* RAIAS */
+    .raia {
+      border: 2px dashed #aaa;
+      margin: 10px 0;
+      height: 160px;
+      position: relative;
+      background: #f9f9f9;
+    }
 
-.list-item {
-  display:flex;
-  justify-content:space-between;
-}
+    .raia-title {
+      background: #4CAF50;
+      color: white;
+      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
 
-textarea { width:100%; height:120px; }
+    .raia-item {
+      position: absolute;
+      cursor: move;
+      z-index: 99999;
+      /* 🔥 MAIS ALTO */
+    }
 
-/* ================= MOBILE ================= */
-@media (max-width: 768px){
+    /* MOBILE */
+    @media (max-width:768px) {
+      .icon-card {
+        width: 90px;
+      }
 
-  .container {
-    padding:10px;
-    gap:10px;
-  }
+      .icon-bg {
+        width: 70px;
+        height: 70px;
+      }
 
-  .panel {
-    padding:12px;
-  }
-
-  .panel input,
-  .panel select,
-  .panel button {
-    width:100%;
-    margin-top:6px;
-  }
-
-  #formas, #cores, #icones {
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-  }
-
-  .row {
-    justify-content:center;
-  }
-
-  .icon-card {
-    width:90px;
-  }
-
-  .shape {
-    width:60px;
-    height:60px;
-  }
-
-  .icon-shape {
-    width:70px;
-    height:70px;
-  }
-
-  .icon-shape img {
-    width:32px;
-  }
-
-  .triangle-shape {
-    width:90px;
-    height:80px;
-  }
-
-  .triangle-shape img {
-    width:28px;
-  }
-
-  textarea {
-    height:150px;
-    font-size:12px;
-  }
-
-  h2 { font-size:18px; }
-  h3 { font-size:16px; }
-  h4 { font-size:14px; }
-}
-</style>
+      .icon-bg img.icon {
+        width: 30px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="topbar">
+    Modo:
+    <select onchange="trocarModo(this.value)">
+      <option value="icones">Ícones</option>
+      <option value="raias">Raias</option>
+    </select>
+  </div>
 
-<div class="panel">
-<h3>Novo Ícone</h3>
+  <!-- ================= ICONES ================= -->
+  <div id="view-icones" class="view active">
 
-<input id="texto" placeholder="Texto">
-<select id="tipo"></select>
-<select id="subtipo"></select>
+    <div class="container">
 
-<h4>Forma</h4>
-<div id="formas"></div>
+      <div class="panel">
+        <h3>Novo Ícone</h3>
 
-<h4>Cor</h4>
-<div id="cores"></div>
+        <input id="texto" placeholder="Texto">
+        <select id="tipo"></select>
+        <select id="subtipo"></select>
 
-<h4>Ícone</h4>
-<div id="icones"></div>
+        <h4>Background</h4>
+        <div id="backgrounds"></div>
 
-<button onclick="criarIcone()">Criar</button>
-</div>
+        <h4>Ícone</h4>
+        <div id="icones"></div>
 
-<div class="panel">
-<h3>Tipos</h3>
-<input id="novoTipo"><button onclick="addTipo()">+</button>
-<div id="listaTipos"></div>
-</div>
+        <button onclick="criarIcone()">Criar</button>
+      </div>
 
-<div class="panel">
-<h3>Subtipos</h3>
-<input id="novoSubtipo">
-<select id="subtipoTipo"></select>
-<button onclick="addSubtipo()">+</button>
-<div id="listaSubtipos"></div>
-</div>
+      <div class="panel">
+        <h3>Tipos</h3>
+        <input id="novoTipo"><button onclick="addTipo()">+</button>
+        <div id="listaTipos"></div>
+      </div>
 
-<div class="panel">
-<h3>Cores</h3>
-<input type="color" id="novaCor">
-<button onclick="addCor()">+</button>
-<div id="listaCores"></div>
-</div>
+      <div class="panel">
+        <h3>Subtipos</h3>
+        <input id="novoSubtipo">
+        <select id="subtipoTipo"></select>
+        <button onclick="addSubtipo()">+</button>
+        <div id="listaSubtipos"></div>
+      </div>
 
-</div>
+    </div>
 
-<h3 style="padding-left:15px;">Ícones</h3>
-<div id="preview" style="padding:15px;"></div>
+    <h3 style="padding-left:15px;">Ícones</h3>
+    <div id="preview" style="padding:15px;"></div>
 
-<h3 style="padding-left:15px;">JSON</h3>
-<button onclick="exportar()">Exportar</button>
-<button onclick="importar()">Importar</button>
-<textarea id="json"></textarea>
+    <h3 style="padding-left:15px;">JSON</h3>
+    <button onclick="exportar()">Exportar</button>
+    <button onclick="importar()">Importar</button>
+    <textarea id="json"></textarea>
 
-<script>
-// SEU JS ORIGINAL INTACTO
-// (não alterei nada aqui)
+  </div>
 
-let db = {
-  tipos:[{id:"t1",nome:"Recursos"}],
-  subtipos:[{id:"s1",nome:"Interativo",tipoId:"t1"}],
-  cores:[
-    {id:"c1",valor:"#2ecc71"},
-    {id:"c2",valor:"#f39c12"},
-    {id:"c3",valor:"#3498db"},
-    {id:"c4",valor:"#e84393"}
-  ],
-  icones:[]
-};
+  <!-- ================= RAIAS ================= -->
+  <div id="view-raias" class="view" style="padding:10px;">
 
-let selecionado = {
-  forma:"circle",
-  corId:"c1",
-  imagem:"1.png"
-};
+    <button onclick="abrirPicker()">Adicionar Ícone</button>
+    <button onclick="addRaia()">+ Raia</button>
 
-const formasLista = ["circle","square","triangulo"];
-const imagensDisponiveis = ["1.png","2.png","3.png","4.png"];
+    <div id="raiasContainer"></div>
 
-function uid(prefix){
-  return prefix + Date.now();
-}
+  </div>
 
-function getCor(id){
-  return db.cores.find(c=>c.id===id) || db.cores[0];
-}
+  <div id="picker"
+    style="display:none;position:fixed;bottom:0;left:0;right:0;background:white;padding:10px;border-top:2px solid #ccc;max-height:50vh;overflow:auto;">
+  </div>
 
-function refreshAll(){
-  renderTipos();
-  renderSubtipos();
-  renderListas();
-  renderPickers();
-  renderIcons();
-}
+  <script>
 
-/* PICKERS */
-function renderPickers(){
-  formas.innerHTML="";
-  cores.innerHTML="";
-  icones.innerHTML="";
+    /* ================= DB ================= */
+    let db = {
+      tipos: [{ id: "t1", nome: "Recursos" }],
+      subtipos: [{ id: "s1", nome: "Interativo", tipoId: "t1" }],
+      icones: []
+    };
 
-  const corSelecionada = getCor(selecionado.corId);
+    let selecionado = {
+      background: "ca.png",
+      imagem: "1.png"
+    };
 
-  formasLista.forEach(f=>{
-    let el=document.createElement("div");
-    el.className="shape-option";
-    if(f===selecionado.forma) el.classList.add("selected");
+    let iconesRaias = [];
+    const backgroundsDisponiveis = [
+      "ca.png", "cl.png", "cr.png", "cv.png",
+      "qa.png", "ql.png", "qr.png", "qv.png",
+      "ta.png", "tl.png", "tr.png", "tv.png"
+    ];
 
-    if(f==="triangulo"){
-      el.innerHTML=`<div class="triangle-shape" style="background:${corSelecionada.valor}"></div>`;
-    } else {
-      el.innerHTML=`<div class="shape ${f}" style="background:${corSelecionada.valor}"></div>`;
+    const imagensDisponiveis = ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png", "10.png", "11.png", "12.png"];
+
+    /* ================= IDS ================= */
+    function gerarId(prefix, lista) {
+      const nums = lista.map(i => parseInt(i.id.replace(prefix, ''))).filter(n => !isNaN(n));
+      return prefix + (nums.length ? Math.max(...nums) + 1 : 1);
     }
 
-    el.onclick=()=>{selecionado.forma=f;renderPickers();}
-    formas.appendChild(el);
-  });
+    /* ================= MODOS ================= */
+    function trocarModo(m) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.getElementById("view-" + m).classList.add("active");
 
-  db.cores.forEach(c=>{
-    let el=document.createElement("div");
-    el.className="color-option";
-    el.style.background=c.valor;
+      picker.style.display = "none";
 
-    if(c.id===selecionado.corId) el.classList.add("color-selected");
+      // 🔥 NOVO
+      if (m !== "raias") {
+        iconesRaias.forEach(el => el.style.display = "none");
+      } else {
+        iconesRaias.forEach(el => el.style.display = "block");
+      }
+    }
 
-    el.onclick=()=>{selecionado.corId=c.id;renderPickers();}
-    cores.appendChild(el);
-  });
+    /* ================= PICKERS ================= */
+    function renderPickers() {
+      backgrounds.innerHTML = "";
+      icones.innerHTML = "";
 
-  imagensDisponiveis.forEach(img=>{
-    let el=document.createElement("img");
-    el.src="resources/icons/"+img;
-    el.className="icon-option";
-
-    if(img===selecionado.imagem) el.classList.add("icon-selected");
-
-    el.onclick=()=>{selecionado.imagem=img;renderPickers();}
-    icones.appendChild(el);
-  });
-}
-
-/* RESTO DO JS IGUAL */
-function criarIcone(){
-  if(!texto.value || !tipo.value || !subtipo.value) return;
-
-  db.icones.push({
-    id: uid("i"),
-    texto:texto.value,
-    tipoId:tipo.value,
-    subtipoId:subtipo.value,
-    forma:selecionado.forma,
-    corId:selecionado.corId,
-    imagem:selecionado.imagem
-  });
-
-  refreshAll();
-}
-
-function renderIcons(){
-  preview.innerHTML="";
-
-  db.tipos.forEach(t=>{
-    const tipoDiv=document.createElement("div");
-    tipoDiv.className="tipo-bloco";
-    tipoDiv.innerHTML=`<h2>${t.nome}</h2>`;
-
-    db.subtipos.filter(s=>s.tipoId===t.id).forEach(s=>{
-      const subDiv=document.createElement("div");
-      const titulo=document.createElement("h4");
-      titulo.innerText=s.nome;
-
-      const row=document.createElement("div");
-      row.className="row";
-
-      db.icones.filter(i=>i.subtipoId===s.id).forEach(i=>{
-        const cor = getCor(i.corId);
-
-        const card=document.createElement("div");
-        card.className="icon-card";
-
-        let shape="";
-
-        if(i.forma==="triangulo"){
-          shape = `<div class="triangle-shape" style="background:${cor.valor}">
-          <img src="resources/icons/${i.imagem}"></div>`;
-        } else {
-          shape = `<div class="shape ${i.forma} icon-shape" style="background:${cor.valor}">
-          <img src="resources/icons/${i.imagem}"></div>`;
-        }
-
-        card.innerHTML = `${shape}
-        <div class="icon-text">${i.texto}</div>
-        <button onclick="deletarIcone('${i.id}')">🗑️</button>`;
-
-        row.appendChild(card);
+      backgroundsDisponiveis.forEach(bg => {
+        let el = document.createElement("img");
+        el.src = "resources/backgrounds/" + bg;
+        el.className = "bg-option bg-preview";
+        if (bg === selecionado.background) el.classList.add("bg-selected");
+        el.onclick = () => { selecionado.background = bg; renderPickers(); }
+        backgrounds.appendChild(el);
       });
 
-      subDiv.appendChild(titulo);
-      subDiv.appendChild(row);
-      tipoDiv.appendChild(subDiv);
-    });
+      imagensDisponiveis.forEach(img => {
+        let el = document.createElement("img");
+        el.src = "resources/icons/" + img;
+        el.className = "icon-option";
+        if (img === selecionado.imagem) el.classList.add("icon-selected");
+        el.onclick = () => { selecionado.imagem = img; renderPickers(); }
+        icones.appendChild(el);
+      });
+    }
 
-    preview.appendChild(tipoDiv);
-  });
-}
+    /* ================= ICONES ================= */
+    function criarIcone() {
+      if (!texto.value || !tipo.value || !subtipo.value) return;
 
-function deletarIcone(id){
-  db.icones=db.icones.filter(i=>i.id!==id);
-  refreshAll();
-}
+      db.icones.push({
+        id: gerarId("i", db.icones),
+        texto: texto.value,
+        tipoId: tipo.value,
+        subtipoId: subtipo.value,
+        background: selecionado.background,
+        imagem: selecionado.imagem
+      });
 
-function deletarTipo(id){
-  db.subtipos=db.subtipos.filter(s=>s.tipoId!==id);
-  db.icones=db.icones.filter(i=>i.tipoId!==id);
-  db.tipos=db.tipos.filter(t=>t.id!==id);
-  refreshAll();
-}
+      refreshAll();
+    }
 
-function deletarSubtipo(id){
-  db.icones=db.icones.filter(i=>i.subtipoId!==id);
-  db.subtipos=db.subtipos.filter(s=>s.id!==id);
-  refreshAll();
-}
+    function renderIcons() {
+      preview.innerHTML = "";
 
-function deletarCor(id){
-  db.icones=db.icones.filter(i=>i.corId!==id);
-  db.cores=db.cores.filter(c=>c.id!==id);
+      db.tipos.forEach(t => {
+        const tipoDiv = document.createElement("div");
+        tipoDiv.innerHTML = `<h2>${t.nome}</h2>`;
 
-  if(selecionado.corId===id){
-    selecionado.corId = db.cores[0]?.id;
-  }
+        db.subtipos.filter(s => s.tipoId === t.id).forEach(s => {
 
-  refreshAll();
-}
+          const subDiv = document.createElement("div");
 
-function addTipo(){
-  if(!novoTipo.value) return;
-  db.tipos.push({id:uid("t"),nome:novoTipo.value});
-  refreshAll();
-}
+          // 🔥 AQUI ESTÁ A CORREÇÃO
+          const titulo = document.createElement("h4");
+          titulo.innerText = s.nome;
 
-function addSubtipo(){
-  if(!novoSubtipo.value) return;
-  db.subtipos.push({id:uid("s"),nome:novoSubtipo.value,tipoId:subtipoTipo.value});
-  refreshAll();
-}
+          const row = document.createElement("div");
+          row.className = "row";
 
-function addCor(){
-  db.cores.push({id:uid("c"),valor:novaCor.value});
-  refreshAll();
-}
+          db.icones.filter(i => i.subtipoId === s.id).forEach(i => {
+            const card = document.createElement("div");
+            card.className = "icon-card";
 
-function renderListas(){
-  listaTipos.innerHTML="";
-  db.tipos.forEach(t=>{
-    listaTipos.innerHTML+=`<div class="list-item">${t.nome}
+            card.innerHTML = `
+          <div class="icon-bg">
+            <img class="bg" src="resources/backgrounds/${i.background}">
+            <img class="icon" src="resources/icons/${i.imagem}">
+          </div>
+          <div class="icon-text">${i.texto}</div>
+          <button onclick="deletarIcone('${i.id}')">🗑️</button>
+        `;
+
+            row.appendChild(card);
+          });
+
+          subDiv.appendChild(titulo); // 👈 ESSENCIAL
+          subDiv.appendChild(row);
+
+          tipoDiv.appendChild(subDiv);
+        });
+
+        preview.appendChild(tipoDiv);
+      });
+    }
+
+    function deletarIcone(id) {
+      db.icones = db.icones.filter(i => i.id !== id);
+      refreshAll();
+    }
+
+    /* ================= TIPOS ================= */
+    function addTipo() {
+      if (!novoTipo.value) return;
+      db.tipos.push({ id: gerarId("t", db.tipos), nome: novoTipo.value });
+      refreshAll();
+    }
+
+    function addSubtipo() {
+      if (!novoSubtipo.value) return;
+      db.subtipos.push({ id: gerarId("s", db.subtipos), nome: novoSubtipo.value, tipoId: subtipoTipo.value });
+      refreshAll();
+    }
+
+    function renderListas() {
+      listaTipos.innerHTML = "";
+      db.tipos.forEach(t => {
+        listaTipos.innerHTML += `
+    <div class="list-item">${t.nome}
     <button onclick="deletarTipo('${t.id}')">🗑️</button></div>`;
-  });
+      });
 
-  listaSubtipos.innerHTML="";
-  db.subtipos.forEach(s=>{
-    listaSubtipos.innerHTML+=`<div class="list-item">${s.nome}
+      listaSubtipos.innerHTML = "";
+      db.subtipos.forEach(s => {
+        listaSubtipos.innerHTML += `
+    <div class="list-item">${s.nome}
     <button onclick="deletarSubtipo('${s.id}')">🗑️</button></div>`;
-  });
+      });
+    }
 
-  listaCores.innerHTML="";
-  db.cores.forEach(c=>{
-    listaCores.innerHTML+=`<div class="list-item">
-    <div style="background:${c.valor};width:30px;height:30px;"></div>
-    <button onclick="deletarCor('${c.id}')">🗑️</button></div>`;
-  });
-}
+    function deletarTipo(id) {
+      db.tipos = db.tipos.filter(t => t.id !== id);
+      db.subtipos = db.subtipos.filter(s => s.tipoId !== id);
+      db.icones = db.icones.filter(i => i.tipoId !== id);
+      refreshAll();
+    }
 
-function renderTipos(){
-  tipo.innerHTML="";
-  subtipoTipo.innerHTML="";
-  db.tipos.forEach(t=>{
-    tipo.innerHTML+=`<option value="${t.id}">${t.nome}</option>`;
-    subtipoTipo.innerHTML+=`<option value="${t.id}">${t.nome}</option>`;
-  });
-}
+    function deletarSubtipo(id) {
+      db.subtipos = db.subtipos.filter(s => s.id !== id);
+      db.icones = db.icones.filter(i => i.subtipoId !== id);
+      refreshAll();
+    }
 
-function renderSubtipos(){
-  subtipo.innerHTML="";
-  db.subtipos.filter(s=>s.tipoId===tipo.value)
-  .forEach(s=>{
-    subtipo.innerHTML+=`<option value="${s.id}">${s.nome}</option>`;
-  });
-}
+    function renderTipos() {
+      tipo.innerHTML = "";
+      subtipoTipo.innerHTML = "";
+      db.tipos.forEach(t => {
+        tipo.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
+        subtipoTipo.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
+      });
+    }
 
-tipo.addEventListener("change", renderSubtipos);
+    function renderSubtipos() {
+      subtipo.innerHTML = "";
+      db.subtipos.filter(s => s.tipoId === tipo.value)
+        .forEach(s => {
+          subtipo.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
+        });
+    }
 
-function exportar(){
-  json.value=JSON.stringify(db,null,2);
-}
+    tipo.addEventListener("change", renderSubtipos);
 
-function importar(){
-  db=JSON.parse(json.value);
-  refreshAll();
-}
+    /* ================= RAIAS ================= */
+    let raias = [
+      { id: "r1", nome: "Recursos" },
+      { id: "r2", nome: "Atividades" },
+      { id: "r3", nome: "Ação do Professor" }
+    ];
 
-refreshAll();
-</script>
+    function renderRaias() {
+      const c = document.getElementById("raiasContainer");
+      c.innerHTML = "";
+
+      raias.forEach(r => {
+        const d = document.createElement("div");
+        d.className = "raia";
+        d.id = r.id;
+
+        d.innerHTML = `
+      <div class="raia-title">
+        <input value="${r.nome}" onchange="editarRaia('${r.id}',this.value)">
+        <button onclick="deletarRaia('${r.id}')">🗑️</button>
+      </div>
+    `;
+
+        c.appendChild(d);
+      });
+    }
+
+    function addRaia() {
+      raias.push({ id: "r" + (raias.length + 1), nome: "Nova Raia" });
+      renderRaias();
+    }
+
+    function deletarRaia(id) {
+      raias = raias.filter(r => r.id !== id);
+      renderRaias();
+    }
+
+    function editarRaia(id, n) {
+      const r = raias.find(r => r.id === id);
+      if (r) r.nome = n;
+    }
+
+    /* ================= PICKER BONITO ================= */
+    function abrirPicker() {
+
+      // 🔥 TOGGLE
+      if (picker.style.display === "block") {
+        picker.style.display = "none";
+        return;
+      }
+
+      picker.style.display = "block";
+      picker.innerHTML = "";
+
+      db.tipos.forEach(t => {
+        const tipoDiv = document.createElement("div");
+        tipoDiv.innerHTML = `<h4>${t.nome}</h4>`;
+
+        db.subtipos.filter(s => s.tipoId === t.id).forEach(s => {
+
+          const subDiv = document.createElement("div");
+          subDiv.innerHTML = `<strong>${s.nome}</strong>`;
+
+          const row = document.createElement("div");
+          row.className = "row";
+
+          db.icones.filter(i => i.subtipoId === s.id).forEach(i => {
+            const card = document.createElement("div");
+            card.className = "icon-card";
+
+            card.innerHTML = `
+          <div class="icon-bg">
+            <img class="bg" src="resources/backgrounds/${i.background}">
+            <img class="icon" src="resources/icons/${i.imagem}">
+          </div>
+          <div class="icon-text">${i.texto}</div>
+        `;
+
+            card.onclick = () => addIconToRaia(i);
+
+            row.appendChild(card);
+          });
+
+          subDiv.appendChild(row);
+          tipoDiv.appendChild(subDiv);
+        });
+
+        picker.appendChild(tipoDiv);
+      });
+    }
+
+    /* ================= DRAG FIX ================= */
+    function addIconToRaia(icon) {
+
+      const el = document.createElement("div");
+      el.className = "raia-item";
+
+
+
+      el.innerHTML = `
+    <div style="text-align:center;">
+      <div class="icon-bg">
+        <img class="bg" src="resources/backgrounds/${icon.background}">
+        <img class="icon" src="resources/icons/${icon.imagem}">
+      </div>
+      <div style="font-size:12px;">${icon.texto}</div>
+    </div>
+  `;
+
+      document.getElementById("view-raias").appendChild(el);
+      iconesRaias.push(el);
+
+      el.style.position = "absolute";
+      el.style.left = "100px";
+      el.style.top = "100px";
+
+      makeDraggable(el);
+
+ 
+    }
+    function makeDraggable(el) {
+
+      let offsetX = 0;
+      let offsetY = 0;
+      let dragging = false;
+
+      el.style.touchAction = "none"; // 🔥 ESSENCIAL mobile
+
+      el.addEventListener("pointerdown", (e) => {
+        dragging = true;
+
+        const rect = el.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        el.setPointerCapture(e.pointerId);
+      });
+
+      el.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+
+        let x = e.clientX - offsetX;
+        let y = e.clientY - offsetY;
+
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+      });
+
+      el.addEventListener("pointerup", (e) => {
+        dragging = false;
+        el.releasePointerCapture(e.pointerId);
+      });
+    }
+
+    /* ================= JSON ================= */
+    function exportar() {
+      json.value = JSON.stringify(db, null, 2);
+    }
+
+    function importar() {
+      db = JSON.parse(json.value);
+      refreshAll();
+    }
+
+    /* ================= INIT ================= */
+    function refreshAll() {
+      renderTipos();
+      renderSubtipos();
+      renderListas();
+      renderPickers();
+      renderIcons();
+    }
+
+    refreshAll();
+    renderRaias();
+
+  </script>
 
 </body>
+
 </html>
